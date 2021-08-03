@@ -40,3 +40,44 @@ function createTimeOutEvent(employeeObj, dateStamp){
     })
     return employeeObj
 } 
+
+ let hoursWorkedOnDate = function(employeeObj, dateWorked) {
+     let clockedInEvent= employeeObj.timeInEvents.find(function(e){
+         return e.date === dateWorked
+     })
+     let clockedOutEvent = employeeObj.timeOutEvents.find(function(e){
+        return e.date === dateWorked
+    })
+
+    return (clockedOutEvent.hour - clockedInEvent.hour) / 100
+ }
+
+ let wagesEarnedOnDate = function(employee, dateSought){
+    let rawWage = hoursWorkedOnDate(employee, dateSought)
+        * employee.payPerHour
+    return parseFloat(rawWage.toString())
+}
+
+let allWagesFor = function(employee){
+    let eligibleDates = employee.timeInEvents.map(function(e){
+        return e.date
+    })
+
+    let payable = eligibleDates.reduce(function(memo, d){
+        return memo + wagesEarnedOnDate(employee, d)
+    }, 0)
+
+    return payable
+}
+
+let findEmployeeByFirstName = function(srcArray, firstName) {
+  return srcArray.find(function(rec){
+    return rec.firstName === firstName
+  })
+}
+
+let calculatePayroll = function(arrayOfEmployeeRecords){
+    return arrayOfEmployeeRecords.reduce(function(memo, rec){
+        return memo + allWagesFor(rec)
+    }, 0)
+}
